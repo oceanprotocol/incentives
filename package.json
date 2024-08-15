@@ -1,0 +1,15 @@
+{
+  "name": "incentives",
+  "version": "0.0.1",
+  "description": "A Node.js script to fetch ocean nodes rewards data and save it as a CSV.",
+  "main": "scripts/fetchRewards.js",
+  "scripts": {
+    "start": "node scripts/fetchRewards.js"
+  },
+  "keywords": [],
+  "author": "OceanProtocol",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.4"
+  }
+}
