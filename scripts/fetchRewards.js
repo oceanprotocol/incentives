@@ -37,7 +37,8 @@ const writeCSV = (data, filePath) => {
     const headers = ['address', 'reward_amount'];
     const csvRows = [headers.join(',')];
     data.forEach(row => {
-        csvRows.push(`${row.address},${row.amount}`);
+        if(row.address && row.amount)
+            csvRows.push(`${row.address},${row.amount}`);
     });
 
     fs.writeFileSync(filePath, csvRows.join(os.EOL));
