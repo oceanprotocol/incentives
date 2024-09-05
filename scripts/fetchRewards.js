@@ -36,13 +36,17 @@ const fetchData = async (date) => {
 const writeCSV = (data, filePath) => {
     const headers = ['address', 'reward_amount'];
     const csvRows = [headers.join(',')];
+    let totalAmount = 0
     data.forEach(row => {
-        if(row.address && row.amount)
+        if(row.address && row.amount){
             csvRows.push(`${row.address},${row.amount}`);
+            totalAmount += parseFloat(row.amount);
+        }
     });
 
     fs.writeFileSync(filePath, csvRows.join(os.EOL));
     console.log(`CSV file saved to ${filePath}`);
+    return totalAmount;
 };
 
 const main = async () => {
@@ -66,7 +70,8 @@ const main = async () => {
             amount: item.amount
         }));
 
-        writeCSV(rewardsData, filePath);
+        const totalAmount=writeCSV(rewardsData, filePath);
+        console.log(`Total Amount: ${totalAmount}`);
     } catch (error) {
         console.error('Failed to fetch and write rewards data:', error.message);
     }
