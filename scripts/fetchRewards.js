@@ -3,15 +3,23 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const getEpochTime = () => Math.floor(Date.now() / 1000);
 
-const getYear = () => new Date().getFullYear()
+const getYear = (date) => date.getFullYear()
 
-const getCurrentWeekNumber = () => {
-    const currentDate = new Date();
+const getCurrentWeekNumber = (currentDate) => {
     const firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1);
     const pastDaysOfYear = (currentDate - firstDayOfYear) / 86400000;
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+};
+
+const parseArguments = () => {
+    const args = process.argv.slice(2);
+    const argObj = {};
+    args.forEach(arg => {
+        const [key, value] = arg.split('=');
+        argObj[key.replace('--', '')] = value;
+    });
+    return argObj;
 };
 
 const fetchData = async (date) => {
@@ -37,19 +45,21 @@ const writeCSV = (data, filePath) => {
 };
 
 const main = async () => {
-    const currentWeek = getCurrentWeekNumber();
-    const currentYear = getYear()
-    const epochTime = getEpochTime();
+    const args = parseArguments();
+    const timestamp = args.timestamp ? parseInt(args.timestamp) : Date.now();
+    const providedDate = new Date(timestamp);
+    const currentWeek = getCurrentWeekNumber(providedDate);
+    const currentYear = getYear(providedDate)
 
     const dirPath = path.join(__dirname, '../data', `${currentYear}-week-${currentWeek}`);
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
     }
 
-    const filePath = path.join(dirPath, `rewards-epoch-${epochTime}.csv`);
+    const filePath = path.join(dirPath, `rewards-epoch-${timestamp/1000}.csv`);
 
     try {
-        const jsonData = await fetchData(getEpochTime());
+        const jsonData = await fetchData(timestamp/1000);
         const rewardsData = jsonData.map(item => ({
             address: item.address,
             amount: item.amount
