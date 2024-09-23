@@ -89,6 +89,14 @@ const abi=[
 let owner
 
 async function main(filePath, tokenAddress) {
+  if(!filePath){
+    console.log("Usage:  node scripts/pay.js csv_path optional_erc20_token_address(null for eth payments\r\n")
+    console.log(" Required ENVS:\r\n")
+    console.log("\t NETWORK_RPC_URL")
+    console.log("\t PRIVATE_KEY")
+    console.log("\t BATCH_CONTRACT_ADDRESS")
+    return
+  }
   if(!tokenAddress)
     tokenAddress=ethers.constants.AddressZero
   const url = process.env.NETWORK_RPC_URL;
@@ -97,7 +105,7 @@ async function main(filePath, tokenAddress) {
     console.error("Missing NETWORK_RPC_URL. Aborting..");
     return null;
   }
-  if (!process.env.BATCH_CONTRACT_ADDRESS && tokenAddress !== ethers.constants.AddressZero) {
+  if (!process.env.BATCH_CONTRACT_ADDRESS) {
     console.error("Missing BATCH_CONTRACT_ADDRESS. Aborting..");
     return null;
   }
@@ -190,7 +198,7 @@ async function sendBatch(list,amounts,tokenAddress,contract){
     console.log("Tx hash:"+tx.hash)
 }
 
-main(process.argv[3],process.argv[4])
+main(process.argv[2],process.argv[3])
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
