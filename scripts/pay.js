@@ -136,7 +136,7 @@ async function main(filePath, tokenAddress) {
   // Convert CSV string into rows:
   const rows = await csv.parse(csvString);
   //send payments in chunks
-  const limit=500
+  const limit=250
   let list=[]
   let amounts=[]
   let totalAmount=ethers.BigNumber.from(0)
@@ -160,8 +160,11 @@ async function main(filePath, tokenAddress) {
     //console.log(row)
     if(!isNaN(parseFloat(row[1]))){
         if(current%limit==0 || current==0){
-            if(list.length>0 && amounts.length>0)
-                await sendBatch(list,amounts,tokenAddress,contract)
+            if(list.length>0 && amounts.length>0){
+                const tx=await sendBatch(list,amounts,tokenAddress,contract)
+                await provider.waitForTransaction(tx.hash,2)
+            }
+
             list=[]
             amounts=[]
         }
@@ -174,7 +177,8 @@ async function main(filePath, tokenAddress) {
   //send remaining
   if(list.length>0){
     //send last batch
-    await sendBatch(list,amounts,tokenAddress,contract)
+    const tx=await sendBatch(list,amounts,tokenAddress,contract)
+    await provider.waitForTransaction(tx.hash,2)
   }
 
 
@@ -190,12 +194,13 @@ async function sendBatch(list,amounts,tokenAddress,contract){
             amountInWei=amountInWei.add(amount)
         }
         //console.log(amountInWei)
-        tx=await contract.connect(owner).sendEther(list,amounts,{ value: amountInWei })
+        tx=await contract.connect(owner).sendEther(list,amounts,{ value: amountInWei,gasLimit:13000000 })
     }
     else{
-        tx=await contract.connect(owner).sendToken(tokenAddress,list,amounts)
+        tx=await contract.connect(owner).sendToken(tokenAddress,list,amounts,{gasLimit:13000000})
     }
     console.log("Tx hash:"+tx.hash)
+    return(tx)
 }
 
 main(process.argv[2],process.argv[3])
