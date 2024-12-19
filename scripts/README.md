@@ -47,8 +47,6 @@ Now, in `data/txs/2024-week-51/txs` you have all transactions, signed.  We need 
 ```
 root@Alex-desktop-ryzen:/repos/ocean/incentives# node scripts/sendTx.js data/txs/2024-week-51/txs
 
-
-root@Alex-desktop-ryzen:/repos/ocean/incentives# node scripts/sendTx.js data/txs/2024-week-51/txs
 Account nonce: 410
 1 - Skiping line , our nonce: 410, tx nonce: 409
 2 - Sending tx with nonce 410.. 0x2be7cf98238445fd5c17d91e2626833acf3ddc9d0fe6a7fd0084667835dd6da5 ..  confirmed
