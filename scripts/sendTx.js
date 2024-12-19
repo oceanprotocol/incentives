@@ -44,8 +44,6 @@ async function main(filePath) {
   let counter=1
   for(const signedTx of txs){
     decoded=await ethers.utils.parseTransaction(signedTx)
-    console.log(decoded)
-    
     if(decoded.nonce!==nonce){
       process.stdout.write(`${counter} - Skiping line , our nonce: ${nonce}, tx nonce: ${decoded.nonce}\n`)
     }
